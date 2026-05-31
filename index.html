@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Nutrição Cerebral Infantil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','1571581991083088');
+    fbq('track','PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1571581991083088&ev=PageView&noscript=1"/></noscript>
+  
+  <!-- Supermago -->
+  <script src="https://supermago.b-cdn.net/supermago.js?ver=20250224" defer></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'Nunito', sans-serif; overflow-x: hidden; }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes glow { 0%,100%{box-shadow:0 0 20px rgba(5,150,105,0.4)} 50%{box-shadow:0 0 40px rgba(5,150,105,0.8)} }
+    @keyframes countUp { from{opacity:0;transform:scale(0.5)} to{opacity:1;transform:scale(1)} }
+    
+    .fadeUp { animation: fadeUp 0.5s ease forwards; }
+    .pop { animation: pop 0.4s cubic-bezier(.36,.07,.19,.97) forwards; }
+    .float { animation: float 3s ease-in-out infinite; }
+    .cta-pulse { animation: glow 2s ease-in-out infinite; }
+    .opt-btn { transition: all 0.2s cubic-bezier(.36,.07,.19,.97); }
+    .opt-btn:hover { transform: translateX(6px) scale(1.02); }
+    .quiz-btn { transition: all 0.25s; }
+    .quiz-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 25px rgba(5,150,105,0.35); }
+    .quiz-btn:active { transform: scale(0.98); }
+    
+    .hidden { display: none !important; }
+    
+    .stage { min-height: 100vh; padding: 2rem 1rem; display: none; }
+    .stage.active { display: flex; }
+    
+    #hero { background: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #047857 70%, #f97316 100%); flex-direction: column; align-items: center; justify-content: center; }
+    #quiz { background: linear-gradient(135deg, #064e3b, #047857); flex-direction: column; align-items: center; justify-content: center; }
+    #loading { background: linear-gradient(135deg, #064e3b, #047857); flex-direction: column; align-items: center; justify-content: center; }
+    #result { background: linear-gradient(135deg, #064e3b, #047857); align-items: center; justify-content: flex-start; padding-top: 3rem; padding-bottom: 3rem; }
+    
+    .container { max-width: 600px; width: 100%; }
+    .container-quiz { max-width: 560px; width: 100%; }
+    
+    /* Hero */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); color: #fff; padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); }
+    
+    .hero-card { background: rgba(255,255,255,0.97); border-radius: 24px; padding: 40px 36px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+    .hero-emoji { font-size: 52px; text-align: center; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+    .hero-h1 { font-size: clamp(1.5rem, 4.5vw, 2.2rem); font-weight: 900; color: #064e3b; text-align: center; margin-bottom: 14px; line-height: 1.2; }
+    .hero-h1 strong { color: #f97316; }
+    .hero-desc { font-size: 16px; color: #374151; text-align: center; margin-bottom: 28px; line-height: 1.65; }
+    
+    .stats-row { display: flex; gap: 12px; margin-bottom: 28px; justify-content: center; flex-wrap: wrap; }
+    .stat-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 10px 16px; text-align: center; min-width: 90px; }
+    .stat-emoji { font-size: 18px; margin-bottom: 2px; }
+    .stat-number { font-size: 17px; font-weight: 800; color: #065f46; }
+    .stat-label { font-size: 11px; color: #6b7280; }
+    
+    .benefits { margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
+    .benefit { display: flex; gap: 10px; align-items: center; background: #f0fdf4; border-radius: 10px; padding: 10px 14px; }
+    .benefit-emoji { font-size: 18px; }
+    .benefit-text { color: #065f46; font-weight: 600; font-size: 14px; margin: 0; }
+    
+    .hero-btn { width: 100%; background: linear-gradient(135deg, #059669, #047857); color: #fff; font-weight: 800; font-size: 18px; padding: 18px 24px; border-radius: 14px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .hero-btn:hover { transform: translateY(-2px) scale(1.02); }
+    
+    .hero-footer { font-size: 12px; color: #9ca3af; text-align: center; margin-top: 12px; }
+    
+    /* Loading */
+    .loading-spinner { width: 80px; height: 80px; border: 5px solid rgba(255,255,255,0.2); border-top: 5px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 28px; }
+    .loading-card { max-width: 420px; width: 100%; text-align: center; }
+    .loading-h2 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .loading-desc { color: rgba(255,255,255,0.7); margin-bottom: 36px; font-size: 15px; }
+    
+    .loading-steps { display: flex; flex-direction: column; gap: 14px; }
+    .loading-step { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 18px; border: 1px solid transparent; transition: all 0.4s; }
+    .loading-step.active { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.4); }
+    .loading-step.done { background: rgba(255,255,255,0.15); }
+    .loading-icon { font-size: 22px; }
+    .loading-icon.active { animation: pulse 1s infinite; }
+    .loading-text { color: rgba(255,255,255,0.45); font-weight: 400; margin: 0; flex: 1; text-align: left; transition: all 0.3s; }
+    .loading-step.done .loading-text { color: #fff; font-weight: 700; }
+    .loading-check { color: #34d399; font-size: 18px; }
+    
+    /* Quiz */
+    .quiz-progress { margin-bottom: 28px; }
+    .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .progress-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
+    .progress-percent { font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 700; }
+    .progress-bar { width: 100%; background: rgba(255,255,255,0.2); border-radius: 999px; height: 10px; }
+    .progress-fill { height: 10px; border-radius: 999px; background: linear-gradient(to right, #34d399, #fbbf24); transition: width 0.4s cubic-bezier(.36,.07,.19,.97); box-shadow: 0 0 10px rgba(52,211,153,0.6); }
+    
+    .progress-dots { display: flex; justify-content: space-between; margin-top: 6px; gap: 4px; }
+    .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background 0.3s; }
+    .progress-dot.active { background: #34d399; }
+    
+    .quiz-card { background: rgba(255,255,255,0.97); border-radius: 24px; padding: 36px 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .quiz-emoji { font-size: 42px; text-align: center; margin-bottom: 12px; }
+    .quiz-question { font-size: clamp(1.2rem, 4vw, 1.6rem); font-weight: 800; color: #064e3b; margin-bottom: 24px; line-height: 1.3; text-align: center; }
+    
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { width: 100%; text-align: left; padding: 14px 18px; border-radius: 12px; border: 2px solid #e5e7eb; background: #fff; cursor: pointer; font-size: 15px; font-weight: 600; color: #111827; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: all 0.2s; }
+    .quiz-option:hover { border-color: #059669; background: #ecfdf5; color: #065f46; }
+    .quiz-option.selected { border-color: #059669; background: #ecfdf5; color: #065f46; box-shadow: 0 4px 14px rgba(5,150,105,0.2); }
+    
+    .quiz-skip { width: 100%; margin-top: 16px; background: none; border: none; color: #9ca3af; font-weight: 600; font-size: 14px; cursor: pointer; padding: 6px 0; }
+    .quiz-skip:hover { color: #6b7280; }
+    
+    /* Result */
+    .result-header { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); border-radius: 24px; padding: 32px 28px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .result-emoji { font-size: 52px; margin-bottom: 12px; }
+    .result-badge { display: inline-flex; align-items: center; gap: 6px; background: #fff; border-radius: 999px; padding: 6px 16px; font-size: 12px; font-weight: 700; color: #7c3aed; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .result-h2 { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 900; color: #111827; margin-bottom: 12px; line-height: 1.2; }
+    .result-desc { font-size: 16px; color: #6b7280; line-height: 1.65; }
+    
+    .result-boxes { display: grid; gap: 14px; margin-bottom: 20px; }
+    .result-box { border-left: 5px solid; padding: 20px 22px; border-radius: 0 16px 16px 0; box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
+    .result-box.problem { background: #fff7ed; border-left-color: #f97316; }
+    .result-box.solution { background: #f0fdf4; border-left-color: #059669; }
+    .result-box-title { font-weight: 800; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; font-size: 15px; }
+    .result-box-text { color: #374151; line-height: 1.6; font-size: 15px; margin: 0; }
+    
+    .result-food { background: linear-gradient(135deg, #1e1b4b, #312e81); border-radius: 20px; padding: 28px 24px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .result-food-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+    .result-food-counter { font-size: clamp(4rem, 15vw, 6rem); font-weight: 900; color: #fbbf24; line-height: 1; margin-bottom: 4px; animation: countUp 0.6s ease forwards; }
+    .result-food-desc { color: #fff; font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+    .result-food-hint { color: rgba(255,255,255,0.55); font-size: 13px; margin-bottom: 20px; }
+    
+    .food-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .food-group { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 12px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
+    .food-group-emoji { font-size: 22px; margin-bottom: 4px; }
+    .food-group-label { color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 2px; }
+    .food-group-desc { color: rgba(255,255,255,0.55); font-size: 11px; line-height: 1.4; }
+    
+    .result-bonus { margin-bottom: 24px; }
+    .bonus-header { text-align: center; margin-bottom: 14px; }
+    .bonus-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.5); color: #fbbf24; padding: 6px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+    
+    .bonus-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+    .bonus-card { border: 1px solid rgba(167,139,250,0.4); border-radius: 20px; padding: 22px 22px; position: relative; overflow: hidden; display: flex; gap: 14px; align-items: flex-start; }
+    .bonus-card.purple { background: linear-gradient(135deg, #1e1035, #2d1b69); }
+    .bonus-card.blue { background: linear-gradient(135deg, #0c2340, #0c3b6e); border-color: rgba(56,189,248,0.4); }
+    
+    .bonus-icon { border-radius: 14px; padding: 12px; flex-shrink: 0; font-size: 26px; line-height: 1; }
+    .bonus-card.purple .bonus-icon { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .bonus-card.blue .bonus-icon { background: linear-gradient(135deg, #0284c7, #0369a1); }
+    
+    .bonus-content h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .bonus-tag { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 999px; letter-spacing: 1px; }
+    .bonus-card.purple .bonus-tag { background: #7c3aed; color: #fff; }
+    .bonus-card.blue .bonus-tag { background: #0284c7; color: #fff; }
+    
+    .bonus-strikethrough { font-size: 11px; text-decoration: line-through; }
+    .bonus-card.purple .bonus-strikethrough { color: rgba(167,139,250,0.7); }
+    .bonus-card.blue .bonus-strikethrough { color: rgba(125,211,252,0.6); }
+    
+    .bonus-title { color: #fff; font-weight: 800; font-size: 16px; margin-bottom: 4px; line-height: 1.3; }
+    .bonus-desc { font-size: 13px; line-height: 1.55; margin: 0; }
+    .bonus-card.purple .bonus-desc { color: rgba(196,181,253,0.85); }
+    .bonus-card.blue .bonus-desc { color: rgba(147,210,252,0.85); }
+    
+    .bonus-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .bonus-mini-tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+    .bonus-card.purple .bonus-mini-tag { background: rgba(124,58,237,0.3); color: #c4b5fd; }
+    .bonus-card.blue .bonus-mini-tag { background: rgba(2,132,199,0.3); color: #7dd3fc; }
+    
+    .bonus-total { background: rgba(255,255,255,0.07); border-radius: 14px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+    .bonus-total-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; }
+    .bonus-total-value { color: #fbbf24; font-size: 18px; font-weight: 900; }
+    
+    .result-card { background: rgba(255,255,255,0.97); border-radius: 24px; padding: 32px 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .result-card-title { font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 900; color: #111827; line-height: 1.2; margin-bottom: 10px; }
+    .result-card-title strong { color: #059669; }
+    .result-card-desc { color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+    
+    .testimonials { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .testimonial { background: #f9fafb; border-radius: 12px; padding: 14px 16px; border: 1px solid #e5e7eb; }
+    .testimonial-stars { display: flex; gap: 1px; margin-bottom: 4px; }
+    .star { width: 14px; height: 14px; fill: #fbbf24; color: #fbbf24; }
+    .testimonial-text { color: #374151; font-size: 13px; font-style: italic; margin-bottom: 4px; margin: 0 0 4px 0; }
+    .testimonial-author { color: #9ca3af; font-size: 12px; font-weight: 700; margin: 0; }
+    
+    .price-box { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 16px; padding: 18px 20px; margin-bottom: 20px; text-align: center; border: 2px solid #bbf7d0; }
+    .price-old { color: #6b7280; font-size: 12px; text-decoration: line-through; margin-bottom: 2px; }
+    .price-offer { font-size: 13px; font-weight: 700; color: #065f46; margin-bottom: 2px; }
+    .price-value { font-size: clamp(2rem, 8vw, 3rem); font-weight: 900; color: #059669; line-height: 1; }
+    .price-installment { color: #6b7280; font-size: 12px; margin-top: 4px; }
+    
+    .result-btn { width: 100%; background: linear-gradient(135deg, #059669, #047857); color: #fff; font-weight: 800; font-size: 18px; padding: 18px 24px; border-radius: 14px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; }
+    .result-btn:hover { transform: translateY(-2px) scale(1.02); }
+    
+    .trust-badges { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .trust-badge { display: flex; align-items: center; gap: 5px; color: #6b7280; font-size: 12px; font-weight: 600; }
+    .trust-icon { width: 15px; height: 15px; color: #059669; }
+    
+    .result-footer { text-align: center; color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 16px; padding-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- HERO STAGE -->
+<div id="hero" class="stage active">
+  <div class="container fadeUp">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span class="hero-badge">⚡ TESTE GRATUITO · 2 MINUTOS</span>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-emoji">🧒🥦</div>
+      <h1 class="hero-h1">Descubra qual alimento está<br><strong>sabotando o seu filho</strong> toda noite</h1>
+      <p class="hero-desc">5 perguntas rápidas revelam o problema <strong>e a solução</strong> personalizada para o seu filho dormir, aprender e ter energia de verdade.</p>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-emoji">⭐</div>
+          <div class="stat-number">4.9/5</div>
+          <div class="stat-label">avaliação</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-emoji">👩</div>
+          <div class="stat-number">3.247</div>
+          <div class="stat-label">mães</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-emoji">✅</div>
+          <div class="stat-number">92%</div>
+          <div class="stat-label">mudaram</div>
+        </div>
+      </div>
+
+      <div class="benefits">
+        <div class="benefit">
+          <span class="benefit-emoji">🔍</span>
+          <p class="benefit-text">Descubra qual alimento está prejudicando seu filho</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-emoji">📋</span>
+          <p class="benefit-text">Receba um plano alimentar personalizado para ele</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-emoji">🍽️</span>
+          <p class="benefit-text">Acesse +200 receitas práticas e saudáveis</p>
+        </div>
+      </div>
+
+      <button class="hero-btn cta-pulse" onclick="goToQuiz()">
+        🚀 Começar Teste Gratuito
+        <span>→</span>
+      </button>
+
+      <p class="hero-footer">🔒 100% seguro · Sem spam · Seus dados não serão compartilhados</p>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING STAGE -->
+<div id="loading" class="stage">
+  <div class="loading-card fadeUp">
+    <div class="loading-spinner"></div>
+    <h2 class="loading-h2">Analisando suas respostas...</h2>
+    <p class="loading-desc">Personalizando o resultado para o seu filho</p>
+
+    <div class="loading-steps" id="loadingSteps">
+      <div class="loading-step">
+        <span class="loading-icon">🔍</span>
+        <p class="loading-text">Identificando o padrão alimentar</p>
+      </div>
+      <div class="loading-step">
+        <span class="loading-icon">🍽️</span>
+        <p class="loading-text">Selecionando receitas específicas</p>
+      </div>
+      <div class="loading-step">
+        <span class="loading-icon">📋</span>
+        <p class="loading-text">Gerando seu guia personalizado</p>
+      </div>
+      <div class="loading-step">
+        <span class="loading-icon">✅</span>
+        <p class="loading-text">Resultado pronto!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ STAGE -->
+<div id="quiz" class="stage">
+  <div class="container-quiz fadeUp">
+    <div class="quiz-progress">
+      <div class="progress-info">
+        <span class="progress-label">Pergunta <span id="currentQ">1</span> de 5</span>
+        <span class="progress-percent"><span id="progressPercent">20</span>% concluído</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-emoji" id="quizEmoji">🤔</div>
+      <h2 class="quiz-question" id="quizQuestion">Qual é o maior desafio do seu filho agora?</h2>
+      <div class="quiz-options" id="quizOptions"></div>
+      <button class="quiz-skip" onclick="skipQuestion()">Pular esta pergunta →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT STAGE -->
+<div id="result" class="stage">
+  <div class="container">
+    <div class="result-header pop">
+      <div class="result-emoji" id="resultEmoji">🌙</div>
+      <div class="result-badge">✅ RESULTADO PERSONALIZADO</div>
+      <h2 class="result-h2" id="resultTitle">Seu filho precisa dormir melhor</h2>
+      <p class="result-desc" id="resultDesc">A falta de sono afeta tudo: imunidade, crescimento e aprendizagem. A nutrição certa pode transformar completamente as noites do seu filho.</p>
+    </div>
+
+    <div class="result-boxes">
+      <div class="result-box problem">
+        <div class="result-box-title" style="color: #c2410c;">⚠️ O PROBLEMA</div>
+        <p class="result-box-text" id="resultProblem">Crianças que dormem mal geralmente consomem muitos ultraprocessados e têm carência de magnésio, cálcio e triptofano.</p>
+      </div>
+      <div class="result-box solution">
+        <div class="result-box-title" style="color: #065f46;">✅ A SOLUÇÃO</div>
+        <p class="result-box-text" id="resultSolution">O Guia traz receitas específicas para melhorar o sono: cereais integrais, banana, iogurte natural e abóbora.</p>
+      </div>
+    </div>
+
+    <div class="result-food">
+      <p class="result-food-label">O GUIA COMPLETO TEM</p>
+      <div class="result-food-counter" id="foodCounter">+200</div>
+      <p class="result-food-desc">alimentos <strong style="color: #34d399;">rápidos e práticos</strong></p>
+      <p class="result-food-hint">Todos fáceis de encontrar e preparar em menos de 15 minutos</p>
+      <div class="food-groups">
+        <div class="food-group">
+          <div class="food-group-emoji">🧠</div>
+          <div class="food-group-label">+50 Cérebro</div>
+          <div class="food-group-desc">Ômega-3, ferro e vitaminas</div>
+        </div>
+        <div class="food-group">
+          <div class="food-group-emoji">💊</div>
+          <div class="food-group-label">+50 Vitaminas</div>
+          <div class="food-group-desc">A, B, C, D e E</div>
+        </div>
+        <div class="food-group">
+          <div class="food-group-emoji">💪</div>
+          <div class="food-group-label">+50 Energia</div>
+          <div class="food-group-desc">Carboidratos e proteínas</div>
+        </div>
+        <div class="food-group">
+          <div class="food-group-emoji">😴</div>
+          <div class="food-group-label">+50 Sono</div>
+          <div class="food-group-desc">Triptofano e magnésio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-bonus">
+      <div class="bonus-header">
+        <span class="bonus-badge">🎁 BÔNUS EXCLUSIVOS INCLUSOS</span>
+      </div>
+      <div class="bonus-cards">
+        <div class="bonus-card purple">
+          <div class="bonus-icon">🌙</div>
+          <div class="bonus-content">
+            <h4 style="color: rgba(167,139,250,0.7);">
+              <span class="bonus-tag">BÔNUS 1</span>
+              <span class="bonus-strikethrough">Valor R$ 37</span>
+            </h4>
+            <p class="bonus-title">Cardápio Noturno Pronto</p>
+            <p class="bonus-desc">Cardápio completo com refeições e lanches noturnos que preparam o corpo do seu filho para dormir profundo.</p>
+            <div class="bonus-tags">
+              <span class="bonus-mini-tag">🥛 Ceia calmante</span>
+              <span class="bonus-mini-tag">🍌 Lanches relaxantes</span>
+              <span class="bonus-mini-tag">📋 7 dias prontos</span>
+            </div>
+          </div>
+        </div>
+        <div class="bonus-card blue">
+          <div class="bonus-icon">⭐</div>
+          <div class="bonus-content">
+            <h4 style="color: rgba(125,211,252,0.6);">
+              <span class="bonus-tag">BÔNUS 2</span>
+              <span class="bonus-strikethrough">Valor R$ 47</span>
+            </h4>
+            <p class="bonus-title">Guia Completo do Sono Infantil</p>
+            <p class="bonus-desc">O guia definitivo com alimentos que ativam a melatonina naturalmente e receitas exclusivas para melhorar o sono.</p>
+            <div class="bonus-tags">
+              <span class="bonus-mini-tag">😴 Melatonina natural</span>
+              <span class="bonus-mini-tag">🧬 Base científica</span>
+              <span class="bonus-mini-tag">🍽️ Receitas exclusivas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bonus-total">
+        <span class="bonus-total-label">Valor total dos bônus:</span>
+        <span class="bonus-total-value">R$ 84,00 GRÁTIS</span>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3 class="result-card-title">Transforme a saúde do seu filho com <strong>+200 receitas</strong> que funcionam de verdade</h3>
+      <p class="result-card-desc">Centenas de mães já mudaram a alimentação dos filhos e viram resultados reais em menos de 2 semanas.</p>
+
+      <div class="testimonials">
+        <div class="testimonial">
+          <div class="testimonial-stars">
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
+          <p class="testimonial-text">"Meu filho dormia péssimo. Em 10 dias com as receitas do guia, ele dorme a noite toda!"</p>
+          <p class="testimonial-author">— Carla M.</p>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg class="star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2l-2.81 6.63L2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
+          <p class="testimonial-text">"A professora comentou que ele melhorou muito na concentração. Inacreditável!"</p>
+          <p class="testimonial-author">— Ana P.</p>
+        </div>
+      </div>
+
+      <div class="price-box">
+        <div class="price-old">De R$ 97,00</div>
+        <div class="price-offer">Oferta especial por tempo limitado</div>
+        <div class="price-value">R$ 27<span style="font-size: 1.2rem;">,00</span></div>
+        <div class="price-installment">ou 2x de R$ 13,99 sem juros</div>
+      </div>
+
+      <button class="result-btn cta-pulse" onclick="goToCheckout()">
+        🛒 Quero o Guia Completo Agora
+        <span>→</span>
+      </button>
+
+      <div class="trust-badges">
+        <div class="trust-badge">
+          <svg class="trust-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.72-7 8.77V12H5V6.3l7-3.11v8.8z"/></svg>
+          Garantia 15 dias
+        </div>
+        <div class="trust-badge">
+          <svg class="trust-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1h-1v4H7.01H5v2h2v14h14V7h2V5h-2.01H11.99zm6.01 16H7V7h11v14z"/></svg>
+          Acesso imediato
+        </div>
+        <div class="trust-badge">
+          <svg class="trust-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Pagamento seguro
+        </div>
+      </div>
+    </div>
+
+    <p class="result-footer">🔒 Compra 100% segura · Sem assinatura · Acesso vitalício</p>
+  </div>
+</div>
+
+<script>
+const CHECKOUT_URL = "https://pay.wiapy.com/fDHZwt98T_";
+
+const questions = [
+  {
+    emoji: "🤔",
+    question: "Qual é o maior desafio do seu filho agora?",
+    options: [
+      { text: "😴 Não consegue dormir bem, acorda várias vezes à noite", value: "sono" },
+      { text: "📚 Dificuldade de aprender, não consegue se concentrar", value: "aprendizagem" },
+      { text: "⚡ Muito agitado, hiperativo, não para quieto", value: "hiperatividade" },
+      { text: "🥱 Cansa muito rápido, falta energia o dia todo", value: "energia" }
+    ]
+  },
+  {
+    emoji: "📅",
+    question: "Com qual frequência isso acontece?",
+    options: [
+      { text: "😩 Todos os dias, sem exceção", value: "daily" },
+      { text: "😟 Várias vezes por semana", value: "weekly" },
+      { text: "😐 De vez em quando", value: "sometimes" }
+    ]
+  },
+  {
+    emoji: "🍎",
+    question: "Você já percebeu que muda quando ele come certos alimentos?",
+    options: [
+      { text: "🍬 Sim, piora quando come açúcar", value: "sugar" },
+      { text: "🍟 Sim, piora com alimentos industrializados", value: "processed" },
+      { text: "🥗 Sim, melhora com comidas caseiras", value: "homemade" },
+      { text: "🤷 Não percebi relação clara", value: "unclear" }
+    ]
+  },
+  {
+    emoji: "🎯",
+    question: "Qual é seu maior objetivo para o seu filho?",
+    options: [
+      { text: "🌙 Que durma bem e acorde descansado", value: "sleep" },
+      { text: "🏫 Que aprenda melhor na escola", value: "school" },
+      { text: "🏃 Que tenha mais energia e disposição", value: "energy" },
+      { text: "🕊️ Que seja mais calmo e equilibrado", value: "calm" }
+    ]
+  },
+  {
+    emoji: "⏱️",
+    question: "Você teria tempo para refeições simples (menos de 15 min)?",
+    options: [
+      { text: "✅ Sim, todos os dias com prazer", value: "yes_daily" },
+      { text: "👍 Sim, na maioria dos dias", value: "yes_most" },
+      { text: "📅 Só nos fins de semana", value: "yes_weekend" },
+      { text: "⚡ Preciso de soluções ultra-rápidas", value: "quick" }
+    ]
+  }
+];
+
+const results = {
+  sono: {
+    emoji: "🌙",
+    color: "#7c3aed",
+    title: "Seu filho precisa dormir melhor",
+    description: "A falta de sono afeta tudo: imunidade, crescimento e aprendizagem. A nutrição certa pode transformar completamente as noites do seu filho.",
+    problem: "Crianças que dormem mal geralmente consomem muitos ultraprocessados e têm carência de magnésio, cálcio e triptofano — os minerais do relaxamento.",
+    solution: "O Guia traz receitas específicas para melhorar o sono: cereais integrais, banana, iogurte natural e abóbora — todos comprovados para noites tranquilas."
+  },
+  aprendizagem: {
+    emoji: "🧠",
+    color: "#0891b2",
+    title: "Seu filho pode aprender muito mais",
+    description: "Concentração, memória e desempenho escolar dependem diretamente da nutrição cerebral. Existem alimentos que literalmente alimentam o cérebro.",
+    problem: "Crianças com dificuldade de concentração geralmente têm carência de ômega-3, ferro, vitamina B e antioxidantes — os combustíveis do cérebro.",
+    solution: "O Guia tem +50 receitas focadas em alimentos cerebrais: ovos, peixes, castanhas, abóbora e beterraba — fáceis de preparar e aprovados pelas crianças."
+  },
+  hiperatividade: {
+    emoji: "⚡",
+    color: "#d97706",
+    title: "Seu filho pode ser mais calmo e focado",
+    description: "Hiperatividade muitas vezes não é comportamento — é alimentação errada. A nutrição certa pode fazer uma transformação surpreendente.",
+    problem: "Açúcar, corantes artificiais e ultraprocessados aumentam agitação e reduzem o foco. Faltam os alimentos naturalmente calmantes na dieta.",
+    solution: "O Guia tem receitas que reduzem agitação naturalmente: aveia, mel, frutas vermelhas e chocolate 70% cacau — gostosos e eficientes."
+  },
+  energia: {
+    emoji: "💪",
+    color: "#059669",
+    title: "Seu filho pode ter energia durável",
+    description: "Cansaço rápido é sinal de alimentação com picos de açúcar. Energia real e duradoura vem de nutrição bem balanceada.",
+    problem: "Crianças cansadas consomem muito açúcar rápido — picos e quedas bruscas — e têm carência de proteínas, carboidratos complexos e ferro.",
+    solution: "O Guia tem receitas com liberação lenta de energia: grãos integrais, frutas, oleaginosas e ovos — sustentam o pique por horas."
+  }
+};
+
+let currentQuestion = 0;
+let answers = {};
+let selectedAnswer = null;
+
+function updateProgress() {
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  document.getElementById('currentQ').textContent = currentQuestion + 1;
+  document.getElementById('progressPercent').textContent = Math.round(progress);
+  document.getElementById('progressFill').style.width = progress + '%';
+  
+  const dotsContainer = document.getElementById('progressDots');
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < questions.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i <= currentQuestion ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  }
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById('quizEmoji').textContent = q.emoji;
+  document.getElementById('quizQuestion').textContent = q.question;
+  
+  const optionsContainer = document.getElementById('quizOptions');
+  optionsContainer.innerHTML = '';
+  
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option opt-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => selectAnswer(opt.value);
+    optionsContainer.appendChild(btn);
+  });
+  
+  updateProgress();
+}
+
+function selectAnswer(value) {
+  selectedAnswer = value;
+  const btns = document.querySelectorAll('.quiz-option');
+  btns.forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+  
+  setTimeout(() => {
+    answers[currentQuestion] = value;
+    if (currentQuestion < questions.length - 1) {
+      currentQuestion++;
+      selectedAnswer = null;
+      renderQuestion();
+    } else {
+      goToLoading();
+    }
+  }, 350);
+}
+
+function skipQuestion() {
+  answers[currentQuestion] = 'skip';
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    goToLoading();
+  }
+}
+
+function goToQuiz() {
+  hideAllStages();
+  document.getElementById('quiz').classList.add('active');
+  renderQuestion();
+  fbq('track', 'Lead');
+}
+
+function goToLoading() {
+  hideAllStages();
+  document.getElementById('loading').classList.add('active');
+  
+  const steps = document.querySelectorAll('.loading-step');
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      step.classList.add('done');
+      step.classList.add('active');
+      const icon = step.querySelector('.loading-icon');
+      if (i < steps.length - 1) {
+        setTimeout(() => {
+          step.classList.remove('active');
+          icon.classList.remove('active');
+        }, 300);
+      }
+    }, i * 700);
+  });
+  
+  setTimeout(() => {
+    goToResult();
+  }, 2600);
+}
+
+function goToResult() {
+  hideAllStages();
+  document.getElementById('result').classList.add('active');
+  
+  const mainPain = answers[0] || 'sono';
+  const r = results[mainPain];
+  
+  document.getElementById('resultEmoji').textContent = r.emoji;
+  document.getElementById('resultTitle').textContent = r.title;
+  document.getElementById('resultDesc').textContent = r.description;
+  document.getElementById('resultProblem').textContent = r.problem;
+  document.getElementById('resultSolution').textContent = r.solution;
+  
+  animateCounter();
+  fbq('track', 'ViewContent');
+}
+
+function animateCounter() {
+  let start = 0;
+  const end = 200;
+  const duration = 1800;
+  const step = Math.ceil(end / (duration / 16));
+  const counter = document.getElementById('foodCounter');
+  
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= end) {
+      counter.textContent = '+200';
+      clearInterval(timer);
+    } else {
+      counter.textContent = '+' + start;
+    }
+  }, 16);
+}
+
+function goToCheckout() {
+  window.open(CHECKOUT_URL, '_blank');
+  fbq('track', 'InitiateCheckout');
+}
+
+function hideAllStages() {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+}
+
+// Initialize
+renderQuestion();
+</script>
+
+</body>
+</html>
